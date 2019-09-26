@@ -1,18 +1,5 @@
-const express = require('express')
-
-const router = express.Router()
-const axios = require('axios')
-
-const URL = require('../classes/url.class.js')
-const URL_LIST = require('../classes/urlList.class.js')
-
 const IPFS = require('ipfs')
 const OrbitDB = require('orbit-db')
-
-// THIS LIST STORAGE IN THIS ROUTER WILL BE CONVERTED TO USE ETHEREUM SMART CONTRACTS FOR DECENTRALIZATION
-
-let url_storage = new URL_LIST();
-
 // const Identities = require('orbit-db-identity-provider')
 
 // const options = { id: 'local-id' }
@@ -53,33 +40,3 @@ ipfs.on('ready', async () => {
 
 
 })
-
-let New_URL;
-
-
-router.post('/new-url', (req, res) => {
-
-	New_URL = URL.C_newURL(req.body.url)
-	console.log(New_URL.og_url)
-	axios.get(New_URL.og_url)
-		.then(async (response) => {
-			New_URL.web_content = response.data
-			New_URL.ipfs_url = await upload(New_URL)
-			
-			
-			// get();
-
-			// res.send(New_URL.web_content)
-			res.sendStatus(200)
-		})
-		.catch((error) => {
-			res.send("bad url")
-		})
-})
-
-router.get('/db', async (req, res) => {
-	res.send(await db.address.toString())
-})
-
-
-module.exports = router
