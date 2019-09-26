@@ -15,10 +15,10 @@ class URL {
 	
 	P_normalizeURL(){
 		
-		if (this.og_url.indexOf("https://" || "http://") == -1){
+		if (this.og_url.indexOf("https://" || "http://") === -1){
 			this.og_url = "https://" + this.og_url
 		}	
-		if (this.og_url.indexOf(".") == -1){
+		if (this.og_url.indexOf(".") === -1){
 			this.og_url = `${this.og_url}.com`
 		}
 	}

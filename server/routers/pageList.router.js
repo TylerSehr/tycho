@@ -30,6 +30,27 @@ const ipfs = new IPFS(ipfsOptions)
 let upload;
 let get;
 let db;
+
+router.post('/new-url', (req, res) => {
+
+	let New_URL = URL.C_newURL(req.body.url)
+	console.log(New_URL.og_url)
+	axios.get(New_URL.og_url)
+		.then(async (response) => {
+			New_URL.web_content = response.data
+			New_URL.ipfs_url = await upload(New_URL)
+			
+			
+			// get();
+
+			// res.send(New_URL.web_content)
+			res.sendStatus(200)
+		})
+		.catch((error) => {
+			res.send("bad url")
+		})
+})
+
 ipfs.on('ready', async () => {
 	// const identity = await Identities.createIdentity(options)
 	const options = {
@@ -54,28 +75,6 @@ ipfs.on('ready', async () => {
 
 })
 
-let New_URL;
-
-
-router.post('/new-url', (req, res) => {
-
-	New_URL = URL.C_newURL(req.body.url)
-	console.log(New_URL.og_url)
-	axios.get(New_URL.og_url)
-		.then(async (response) => {
-			New_URL.web_content = response.data
-			New_URL.ipfs_url = await upload(New_URL)
-			
-			
-			// get();
-
-			// res.send(New_URL.web_content)
-			res.sendStatus(200)
-		})
-		.catch((error) => {
-			res.send("bad url")
-		})
-})
 
 router.get('/db', async (req, res) => {
 	res.send(await db.address.toString())
