@@ -1,6 +1,9 @@
 const express = require('express')
 require('dotenv').config();
 const pageListRouter = require('./routers/pageList.router')
+
+//2nd attempt create an orbitdb wrapper
+
 const bodyParser = require('body-parser')
 require('fs-extra');
 
@@ -12,8 +15,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static('build'))
-
-
 
 app.use('/page', pageListRouter);
 

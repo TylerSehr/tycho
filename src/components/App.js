@@ -1,5 +1,4 @@
 import React from 'react';
-import '../styles/App.css';
 import Input from './input';
 
 class App extends React.Component {

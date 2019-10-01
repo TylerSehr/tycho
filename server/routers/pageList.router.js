@@ -13,9 +13,6 @@ const OrbitDB = require('orbit-db')
 
 let url_storage = new URL_LIST();
 
-// const Identities = require('orbit-db-identity-provider')
-
-// const options = { id: 'local-id' }
 const ipfsOptions = {
 	EXPERIMENTAL: {
 		pubsub: true
@@ -30,26 +27,7 @@ const ipfs = new IPFS(ipfsOptions)
 let upload;
 let get;
 let db;
-
-router.post('/new-url', (req, res) => {
-
-	let New_URL = URL.C_newURL(req.body.url)
-	console.log(New_URL.og_url)
-	axios.get(New_URL.og_url)
-		.then(async (response) => {
-			New_URL.web_content = response.data
-			New_URL.ipfs_url = await upload(New_URL)
-			
-			
-			// get();
-
-			// res.send(New_URL.web_content)
-			res.sendStatus(200)
-		})
-		.catch((error) => {
-			res.send("bad url")
-		})
-})
+let New_URL;
 
 ipfs.on('ready', async () => {
 	// const identity = await Identities.createIdentity(options)
@@ -63,18 +41,50 @@ ipfs.on('ready', async () => {
 	const orbitdb = await OrbitDB.createInstance(ipfs) //, {identity: identity}
 	db = await orbitdb.keyvalue('url_store', options)
 	console.log(db.address.toString());
-	
+
 	upload = async (New_URL) => {
-		return await db.put(New_URL.og_url, New_URL.web_content)
+		let res;
+		await ipfs.addFromURL(New_URL, async (err, result) => {
+			if (err) {
+				console.log(err);
+			}
+			console.log(result);
+			
+			res = result;
+		})
+		return await res;
 	}
+
+	// upload = async (New_URL) => {
+	// 	return await db.put(New_URL.og_url, New_URL.web_content)
+	// }
 
 	get = async (New_URL) => {
 		console.log(await db.get(New_URL.og_url));
 	}
-
-
 })
 
+router.post('/new-url', async (req, res) => {
+	if (req.body.url == '') {
+		res.sendStatus(500)
+		return;
+	}
+	let result = await upload(New_URL.og_url)
+	New_URL.ipfs_url = result[0].hash
+	console.log(New_URL.ipfs_url);
+	
+	res.send(New_URL.ipfs_url)
+	
+	// axios.get(New_URL.og_url)
+	// 	.then(async (response) => {
+	// 		New_URL.web_content = response.data
+	// 		New_URL.ipfs_url = await upload(New_URL)
+	// 		res.sendStatus(200)
+	// 	})
+	// 	.catch((error) => {
+	// 		res.send("bad url")
+	// 	})
+})
 
 router.get('/db', async (req, res) => {
 	res.send(await db.address.toString())

@@ -1,6 +1,7 @@
 import IPFS from 'ipfs'
 import OrbitDB from 'orbit-db'
 import axios from 'axios'
+import TODD from '../redux/GlobalState'
 
 let db;
 let getFile;
@@ -20,25 +21,27 @@ const initDB = async (render) => {
 	}
 	const ipfs = new IPFS(ipfsOptions)
 	ipfs.on('ready', async () => {
+		console.log('ipfs has loaded');
+		TODD.flags.ipfsReady = true;
+		getFile = async (ipfs_path) => {
+			return await ipfs.get(ipfs_path)
+		}
+
 		// const identity = await Identities.createIdentity(options)
 		const orbitdb = await OrbitDB.createInstance(ipfs) //, {identity: identity}
 		const dist_db = await axios.get('/page/db')
 		db = await orbitdb.keyvalue(dist_db.data)
 		db.events.on('ready', () => {
-			console.log('database is ready');
+			console.log('orbitdb has loaded');
+			TODD.flags.dbReady = true;
 		})
-		await db.load()		
+		await db.load()
 		db.events.on('replicated', (address) => {
 			console.log('db replicated');
 		})
 
-		getFile = async (url) => {
-			return await db.get(url)
-		}
-
-		
 	})
 	render()
 }
 
-export {initDB, getFile}
+export { initDB, getFile }
