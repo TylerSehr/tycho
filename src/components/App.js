@@ -1,15 +1,34 @@
 import React from 'react';
-import Input from './input';
+import InputPage from './InputPage';
+import WebPage from './WebPage'
+import {
+  HashRouter as Router,
+  Route,
+  Redirect,
+  Switch,
+} from 'react-router-dom';
 
 class App extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props)
   }
 
-  render(){    
+  render() {
     return (
       <div className="App">
-        <Input />
+        <Router>
+          <Switch>
+            <Route
+              path="/ipfs"
+              component={WebPage}
+            />
+            <Route
+              path="/"
+              exact
+              component={InputPage}
+            />
+          </Switch>
+        </Router>
       </div>
     );
   }
