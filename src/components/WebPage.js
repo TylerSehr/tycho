@@ -13,19 +13,19 @@ class WebPage extends React.Component {
 		}
 	}
 
-	parseURL(){
+	parseURL() {
 		let result = window.location.href
 		console.log(result);
-		
+
 		return result.substring(result.indexOf('#') + 1, result.length)
 	}
 
 	async componentDidMount() {
-			let file = await getFile(this.state.ipfs_url)
-			this.setState({
-				file: file,
-				page: file[0].content
-			})
+		let file = await getFile(this.state.ipfs_url)
+		this.setState({
+			file: file,
+			page: file[0].content
+		})
 	}
 
 
